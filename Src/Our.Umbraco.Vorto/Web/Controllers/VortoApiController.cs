@@ -41,15 +41,21 @@ namespace Our.Umbraco.Vorto.Web.Controllers
 
 		public object GetDataTypeByAlias(string contentTypeAlias, string propertyAlias)
 		{
-			var contentType = Services.ContentTypeService.GetContentType(contentTypeAlias);
+            IContentTypeComposition contentType = Services.ContentTypeService.GetContentType(contentTypeAlias);
 			var prop = contentType.CompositionPropertyTypes.SingleOrDefault(x => x.Alias == propertyAlias);
 			if (prop == null)
 				return null;
 
+            if (contentType == null)
+            {
+                //should be media
+                contentType = Services.ContentTypeService.GetMediaType(contentTypeAlias);
+            }
+
 			var dtd = Services.DataTypeService.GetDataTypeDefinitionById(prop.DataTypeDefinitionId);
 			return FormatDataType(dtd);
 		}
-
+        
 		protected object FormatDataType(IDataTypeDefinition dtd)
 		{
 			if (dtd == null)
